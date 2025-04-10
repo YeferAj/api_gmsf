@@ -1,4 +1,4 @@
-const db = require('./database');
+const db = require('./db');
 const fs = require('fs');
 const path = require('path');
 
@@ -60,6 +60,9 @@ async function initializeDatabase() {
             )
         `);
 
+        // After creating tables, populate the database
+        await populateDatabase();
+        
         console.log('Database initialized successfully');
     } catch (error) {
         console.error('Error initializing database:', error);
@@ -87,9 +90,10 @@ async function populateDatabase() {
     }
 }
 
-// Call this after creating tables
-await populateDatabase();
-
-initializeDatabase();
+// Remove the top-level await and call initializeDatabase properly
+initializeDatabase().catch(error => {
+    console.error('Failed to initialize database:', error);
+    process.exit(1);
+});
 
 module.exports = initializeDatabase;
