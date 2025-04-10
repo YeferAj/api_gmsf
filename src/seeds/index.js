@@ -1,8 +1,8 @@
-const seedRoles = require('./seeds/roles');
-const seedUsuarios = require('./seeds/usuarios');
-const seedPersonas = require('./seeds/personas');
-const seedServicios = require('./seeds/servicios');
-const seedMembresias = require('./seeds/membresias');
+const seedRoles = require('./roles');
+const seedUsuarios = require('./usuarios');
+const seedPersonas = require('./personas');
+const seedServicios = require('./servicios');
+const seedMembresias = require('./membresias');
 const dbPath = process.env.DB_PATH || './database.db'; // Acepta ruta desde variable de entorno
 const db = new Database(dbPath);
 
