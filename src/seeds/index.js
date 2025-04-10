@@ -3,6 +3,8 @@ const seedUsuarios = require('./usuarios');
 const seedPersonas = require('./personas');
 const seedServicios = require('./servicios');
 const seedMembresias = require('./membresias');
+const dbPath = process.env.DB_PATH || './database.db'; // Acepta ruta desde variable de entorno
+const db = new Database(dbPath);
 
 async function seedAll() {
     try {
