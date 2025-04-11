@@ -1,11 +1,21 @@
-const db = require('./db');
+const { db, run } = require('./db');
 const fs = require('fs');
 const path = require('path');
 
 async function initializeDatabase() {
     try {
+        // Create roles table
+        await run(`
+            CREATE TABLE IF NOT EXISTS roles (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                nombre_rol TEXT UNIQUE NOT NULL,
+                descripcion TEXT,
+                estado INTEGER DEFAULT 1
+            )
+        `);
+
         // Create usuarios table
-        await db.run(`
+        await run(`
             CREATE TABLE IF NOT EXISTS usuarios (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 codigo TEXT UNIQUE NOT NULL,
@@ -22,34 +32,13 @@ async function initializeDatabase() {
                 asistencias_totales INTEGER DEFAULT 0,
                 fecha_nacimiento DATE NOT NULL,
                 estado INTEGER DEFAULT 1,
-                id_rol INTEGER
-            )
-        `);
-
-        // Create roles table
-        await db.run(`
-            CREATE TABLE IF NOT EXISTS roles (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                nombre TEXT UNIQUE NOT NULL,
-                descripcion TEXT,
-                estado INTEGER DEFAULT 1
-            )
-        `);
-
-        // Create servicios table
-        await db.run(`
-            CREATE TABLE IF NOT EXISTS servicios (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                nombre TEXT UNIQUE NOT NULL,
-                descripcion TEXT,
-                precio REAL NOT NULL,
-                estado INTEGER DEFAULT 1,
-                duracion_clase TEXT
+                id_rol INTEGER,
+                FOREIGN KEY (id_rol) REFERENCES roles(id)
             )
         `);
 
         // Create entrenadores table
-        await db.run(`
+        await run(`
             CREATE TABLE IF NOT EXISTS entrenadores (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 id_usuario INTEGER,
@@ -60,9 +49,6 @@ async function initializeDatabase() {
             )
         `);
 
-        // After creating tables, populate the database
-        await populateDatabase();
-        
         console.log('Database initialized successfully');
     } catch (error) {
         console.error('Error initializing database:', error);
