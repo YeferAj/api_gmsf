@@ -1,21 +1,12 @@
 const express = require('express');
 const router = express.Router();
-const { all } = require('../config/db');
+const usuariosController = require('../controllers/usuariosController');
 
-router.get('/', async (req, res) => {
-    try {
-        const usuarios = await all(`
-            SELECT 
-                u.*,
-                r.nombre as nombre_rol
-            FROM usuarios u
-            LEFT JOIN roles r ON u.id_rol = r.id
-            WHERE u.estado = 1
-        `);
-        res.json(usuarios);
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
-});
+// Define routes with proper controller functions
+router.get('/', usuariosController.getAllUsuarios);
+router.get('/:id', usuariosController.getUsuarioById);
+router.post('/', usuariosController.createUsuario);
+router.put('/:id', usuariosController.updateUsuario);
+router.delete('/:id', usuariosController.deleteUsuario);
 
 module.exports = router;

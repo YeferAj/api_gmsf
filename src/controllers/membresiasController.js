@@ -3,7 +3,7 @@ const db = require('../config/db');
 const membresiasController = {
     getAllMembresias: async (req, res) => {
         try {
-            const membresias = await db.all('SELECT * FROM membresias WHERE estado = "activa"');
+            const membresias = await db.all('SELECT * FROM membresias WHERE estado = 1');
             res.json(membresias);
         } catch (error) {
             res.status(500).json({ error: error.message });
@@ -13,7 +13,7 @@ const membresiasController = {
     getMembresiaById: async (req, res) => {
         try {
             const { id } = req.params;
-            const membresia = await db.all('SELECT * FROM membresias WHERE id = ?', [id]);
+            const membresia = await db.get('SELECT * FROM membresias WHERE id = ? AND estado = 1', [id]);
             if (!membresia) {
                 return res.status(404).json({ message: 'Membresía no encontrada' });
             }
@@ -25,15 +25,18 @@ const membresiasController = {
 
     createMembresia: async (req, res) => {
         try {
-            const { id_usuario, fecha_inicio, fecha_fin, tipo_membresia, precio } = req.body;
+            const { nombre, descripcion, duracion, precio } = req.body;
             const result = await db.run(
-                'INSERT INTO membresias (id_usuario, fecha_inicio, fecha_fin, tipo_membresia, estado, precio) VALUES (?, ?, ?, ?, "activa", ?)',
-                [id_usuario, fecha_inicio, fecha_fin, tipo_membresia, precio]
+                'INSERT INTO membresias (nombre, descripcion, duracion, precio, estado) VALUES (?, ?, ?, ?, 1)',
+                [nombre, descripcion, duracion, precio]
             );
             res.status(201).json({ 
                 id: result.lastID,
-                ...req.body,
-                estado: 'activa'
+                nombre,
+                descripcion,
+                duracion,
+                precio,
+                estado: 1
             });
         } catch (error) {
             res.status(500).json({ error: error.message });
@@ -43,17 +46,21 @@ const membresiasController = {
     updateMembresia: async (req, res) => {
         try {
             const { id } = req.params;
-            const { fecha_inicio, fecha_fin, tipo_membresia, precio } = req.body;
+            const { nombre, descripcion, duracion, precio } = req.body;
             const result = await db.run(
-                'UPDATE membresias SET fecha_inicio = ?, fecha_fin = ?, tipo_membresia = ?, precio = ? WHERE id = ?',
-                [fecha_inicio, fecha_fin, tipo_membresia, precio, id]
+                'UPDATE membresias SET nombre = ?, descripcion = ?, duracion = ?, precio = ? WHERE id = ? AND estado = 1',
+                [nombre, descripcion, duracion, precio, id]
             );
             if (result.changes === 0) {
                 return res.status(404).json({ message: 'Membresía no encontrada' });
             }
             res.json({ 
                 id: parseInt(id),
-                ...req.body
+                nombre,
+                descripcion,
+                duracion,
+                precio,
+                estado: 1
             });
         } catch (error) {
             res.status(500).json({ error: error.message });
@@ -64,13 +71,13 @@ const membresiasController = {
         try {
             const { id } = req.params;
             const result = await db.run(
-                'UPDATE membresias SET estado = "inactiva" WHERE id = ?',
+                'UPDATE membresias SET estado = 0 WHERE id = ?',
                 [id]
             );
             if (result.changes === 0) {
                 return res.status(404).json({ message: 'Membresía no encontrada' });
             }
-            res.json({ message: 'Membresía cancelada correctamente' });
+            res.json({ message: 'Membresía eliminada correctamente' });
         } catch (error) {
             res.status(500).json({ error: error.message });
         }

@@ -16,6 +16,19 @@ db.serialize(() => {
         )
     `);
 
+    // Fix membresias table
+    db.run('DROP TABLE IF EXISTS membresias');
+    db.run(`
+        CREATE TABLE membresias (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            nombre TEXT NOT NULL,
+            descripcion TEXT,
+            duracion INTEGER NOT NULL,
+            precio REAL NOT NULL,
+            estado INTEGER DEFAULT 1
+        )
+    `);
+
     // Fix usuarios table
     db.run('DROP TABLE IF EXISTS usuarios');
     db.run(`
@@ -43,6 +56,17 @@ db.serialize(() => {
     db.run(`
         CREATE TABLE entrenadores (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
+            id_usuario INTEGER NOT NULL,
+            especialidad TEXT NOT NULL,
+            fecha_registro DATE NOT NULL,
+            estado INTEGER DEFAULT 1,
+            FOREIGN KEY (id_usuario) REFERENCES usuarios(id)
+        )
+    `);
+    db.run('DROP TABLE IF EXISTS entrenadores');
+    db.run(`
+        CREATE TABLE entrenadores (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
             id_usuario INTEGER,
             nombre TEXT NOT NULL,
             apellido TEXT NOT NULL,
@@ -54,6 +78,23 @@ db.serialize(() => {
             estado INTEGER DEFAULT 1,
             FOREIGN KEY (id_usuario) REFERENCES usuarios(id),
             FOREIGN KEY (id_rol) REFERENCES roles(id)
+        )
+    `);
+
+    // Fix personas table
+    db.run('DROP TABLE IF EXISTS personas');
+    db.run(`
+        CREATE TABLE personas (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            id_usuario INTEGER NOT NULL,
+            id_membresia INTEGER,
+            id_titular INTEGER,
+            relacion TEXT,
+            fecha_registro DATE NOT NULL,
+            estado INTEGER DEFAULT 1,
+            FOREIGN KEY (id_usuario) REFERENCES usuarios(id),
+            FOREIGN KEY (id_membresia) REFERENCES membresias(id),
+            FOREIGN KEY (id_titular) REFERENCES usuarios(id)
         )
     `);
 

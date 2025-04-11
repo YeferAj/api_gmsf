@@ -1,24 +1,11 @@
 const express = require('express');
 const router = express.Router();
-const { all } = require('../config/db');
+const entrenadoresController = require('../controllers/entrenadoresController');
 
-router.get('/', async (req, res) => {
-    try {
-        const entrenadores = await all(`
-            SELECT 
-                e.id,
-                e.id_usuario,
-                e.nombre,
-                e.fecha_registro,
-                e.especialidad,
-                e.estado
-            FROM entrenadores e
-            WHERE e.estado = 1
-        `);
-        res.json(entrenadores);
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
-});
+router.get('/', entrenadoresController.getAllEntrenadores);
+router.get('/:id', entrenadoresController.getEntrenadorById);
+router.post('/', entrenadoresController.createEntrenador);
+router.put('/:id', entrenadoresController.updateEntrenador);
+router.delete('/:id', entrenadoresController.deleteEntrenador);
 
 module.exports = router;

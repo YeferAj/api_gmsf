@@ -3,9 +3,10 @@ const { run } = require('../config/db');
 async function seedEntrenadores() {
     try {
         await run(`
-            INSERT INTO entrenadores (id_usuario, nombre, apellido, telefono, correo, fecha_registro, especialidad, id_rol, estado) VALUES 
-            (2, 'Juan', 'Pérez', '3001234567', 'juan@gym.com', '2023-01-15', 'Musculación', 2, 1),
-            (3, 'María', 'López', '3112345678', 'maria@gym.com', '2023-02-20', 'Cardio y Fitness', 2, 1)
+            INSERT INTO entrenadores (id_usuario, especialidad, fecha_registro, estado) VALUES 
+            (4, 'Musculación', DATE('now'), 1),
+            (5, 'Cardio', DATE('now'), 1),
+            (6, 'Yoga', DATE('now'), 1)
         `);
         console.log('Entrenadores seeded successfully');
     } catch (error) {
